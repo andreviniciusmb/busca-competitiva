@@ -1,6 +1,16 @@
 # Busca Competitiva
 Trabalho da disciplina de Inteligência Artificial 2021 sobre busca competitiva no famoso e popular Jogo da Velha.
 
+## Como jogar
+Basta ter o python instalado na máquina e pelo próprio Windows Power Shell mesmo ou qualquer outro terminal executar o arquivo com o seguinte comando: 
+<code>.\busca-competitiva.py</code> </br>
+Inicialmente será realizado um sorteio para ver se a máquina começa ou você. No nosso exemplo a máquina começou e já jogou.
+
+Feito isso o humano (usuário) será o próximo. Basta escolher a linha e coluna da jogada (valores entre 0 e 2).
+
+E assim sucessivamente.
+
+  
 ## Referências
 <ul>
   <li>Material da disciplina </li>
