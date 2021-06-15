@@ -17,4 +17,5 @@ E assim sucessivamente.
   <li>https://cs50.harvard.edu/ai/2020/weeks/0/ </li>
   <li>http://www.uece.br/computacaoead/index.php/downloads/cat_view </li>
   <li>https://www.freecodecamp.org/news/playing-strategy-games-with-minimax-4ecb83b39b4b/ </li>
+  <li>https://github.com/Cledersonbc/tic-tac-toe-minimax </li>
 </ul>
