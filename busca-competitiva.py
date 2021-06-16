@@ -3,7 +3,7 @@ import time
 
 humano = 'O' ## Marcador do jogador huamno
 pc = 'X'     ## Marcador do jogador PC
-vazio = '-'  ## Marcador do estado vazio
+vazio = ' '  ## Marcador do estado vazio
 
 def jogada_humano(tabuleiro):
     '''
@@ -26,13 +26,16 @@ def jogada_humano(tabuleiro):
             tabuleiro[linha][coluna] = humano
             aux = True
         else:
+            print('>> Jogada invalida!!!')
             aux = False
+            linha = -10
+            coluna = -10
     
     print('Linha: ' + str(linha) + ' - Coluna: ' + str(coluna))
 
-def continua(tabuleiro):
+def final(tabuleiro):
     '''
-    Retorna se o jogo continua (True) ou não (False).
+    Retorna True se o jogo acabou, False caso contrário
     @param Tabuleiro
     @return True/False
     '''
@@ -57,7 +60,7 @@ def resultado(tabuleiro, linha,coluna):
 
 def ganhador(tabuleiro):
     '''
-    Retorna Verdadeiro o ganhador do jogo
+    Retorna o ganhador do jogo se houver
     @param Tabuleiro do jogo
     @return 0/1/2
     '''
@@ -123,63 +126,56 @@ def custo(tabuleiro):
 
     return 0
 
-def maxValor(a,b):
+def acoes(tabuleiro):
     '''
-    Retorna o maior valor entre dois numeros.
-    @param Dois números inteiros
-    @return Um número inteiro
+    Retorna todas as jogadas disponíveis
+    @param Tabuleiro
+    @return Lista de jogadas
     '''
-    if a > b:
-        return a
-    else:
-        return b
+    jogadas = []
 
-def minValor(a,b):
-    '''
-    Retorna o menor valor entre dois numeros.
-    @param Dois números inteiros
-    @return Um número inteiro
-    '''
-    if a < b:
-        return a
-    else:
-        return b
+    for i in range(3):
+        for j in range(3):
+            if tabuleiro[i][j] == vazio:
+                jogadas.append([i,j])
+    return jogadas
 
-def minimax(tabuleiro,profundidade,ehMaximo):
+def minimax(tabuleiro,altura,ehPC):
     '''
     Retorna a jogada ótima para o jogador atual baseado no algoritmo de minimax
-    @param Tabuleiro,profundidade da árvore, se a pontuação é máxima ou não
+    @param Tabuleiro,altura da árvore, se a pontuação é máxima ou não
     @return Pontuação da jogada.
     '''
-    pontos = custo(tabuleiro)
-    if pontos == 1:
-        return pontos
-    elif pontos == -1:
-        return pontos
+    if ((altura < 1) or (final(tabuleiro))):
+        pontos = custo(tabuleiro)
+        return [-1,-1,pontos]
     
-    if not(continua(tabuleiro)):
-        return 0
-    
-    if ehMaximo:
-        melhor_pontuacao = -100000
+    if ehPC:
+        melhor_pontuacao = [-1,-1,-10]
 
-        for i in range(3):
-            for j in range(3):
-                if tabuleiro[i][j] == vazio:
-                    tabuleiro[i][j] = pc
-                    melhor_pontuacao = maxValor(melhor_pontuacao,minimax(tabuleiro,profundidade+1,not(ehMaximo)))
-                    tabuleiro[i][j] = vazio
-        return melhor_pontuacao
+        for espacos_vazios in acoes(tabuleiro):
+            i,j = espacos_vazios[0],espacos_vazios[1]
+            tabuleiro[i][j] = pc
+            pontuacao_atual = minimax(tabuleiro,altura-1,False)
+            tabuleiro[i][j] = vazio
+            if melhor_pontuacao[2] < pontuacao_atual[2]:
+                melhor_pontuacao[0] = i
+                melhor_pontuacao[1] = j
+                melhor_pontuacao[2] = pontuacao_atual[2]
     else:
-        melhor_pontuacao = 100000
+        melhor_pontuacao = [-1,-1,10]
 
-        for i in range(3):
-            for j in range(3):
-                if tabuleiro[i][j] == vazio:
-                    tabuleiro[i][j] = humano
-                    melhor_pontuacao = minValor(melhor_pontuacao,minimax(tabuleiro,profundidade+1,not(ehMaximo)))
-                    tabuleiro[i][j] = vazio
-        return melhor_pontuacao
+        for espacos_vazios in acoes(tabuleiro):
+            i,j = espacos_vazios[0],espacos_vazios[1]
+            tabuleiro[i][j] = humano
+            pontuacao_atual = minimax(tabuleiro,altura-1,True)
+            tabuleiro[i][j] = vazio
+            if melhor_pontuacao[2] > pontuacao_atual[2]:
+                melhor_pontuacao[0] = i
+                melhor_pontuacao[1] = j
+                melhor_pontuacao[2] = pontuacao_atual[2]
+    
+    return melhor_pontuacao
 
 def exibe_tabuleiro(tabuleiro):
     '''
@@ -194,27 +190,6 @@ def exibe_tabuleiro(tabuleiro):
         tabuleiro[2][0] + " | " + tabuleiro[2][1] + " | " + tabuleiro[2][2]
     )
 
-def acoes(tabuleiro):
-    '''
-    Procura a melhor ação e retorna a posição do melhor movimento.
-    @param Tabuleiro
-    @return Lista com dois números inteiros
-    '''
-    melhor_pontuacao = -10
-    pontuacao_atual = -10
-    melhor_movimento = [1,1]
-
-    for i in range(3):
-        for j in range(3):
-            if tabuleiro[i][j] == vazio:
-                tabuleiro[i][j] = pc
-                pontuacao_atual = maxValor(melhor_pontuacao,minimax(tabuleiro,0,False))
-                tabuleiro[i][j] = vazio
-                if pontuacao_atual > melhor_pontuacao:
-                    melhor_pontuacao = pontuacao_atual
-                    melhor_movimento = [i,j]
-    return melhor_movimento
-
 def jogo(tabuleiro,vez):
     '''
     Função que inicia o jogo da velha
@@ -224,7 +199,10 @@ def jogo(tabuleiro,vez):
     ## Indentifica se o jogo acabou (True) ou ainda está em andamento(False) 
     situacao_jogo = False
     vencedor = 2
+    pontos = 0
     l = c = 1
+    profundidade = 9 ## Profundidade máxima da árvore que será gerada
+
     if vez == 0:
         print("\nMáquina começa!")
     else:
@@ -233,14 +211,16 @@ def jogo(tabuleiro,vez):
     while not(situacao_jogo):
         if vez == 0:
             print("\n> Vez de Máquina")
-            l,c = acoes(tabuleiro)
+            l,c,pontos = minimax(tabuleiro,profundidade,True)
             resultado(tabuleiro,l,c)
             vez = 1
+            profundidade -= 1
             time.sleep(2)
         else:
             print("\n> Vez de Humano")
             jogada_humano(tabuleiro)
             vez = 0
+            profundidade -= 1
             time.sleep(1)
             print('- Tabuleiro')
             exibe_tabuleiro(tabuleiro)
@@ -261,9 +241,9 @@ if __name__ == "__main__":
     print("----------Busca Competitiva----------\n")
     ## V - Vazio
     tabuleiro = [
-        ['-','-','-'],
-        ['-','-','-'],
-        ['-','-','-']
+        [' ',' ',' '],
+        [' ',' ',' '],
+        [' ',' ',' ']
     ]
 
     print("\nSorteio do 1º jogador (0 - Máquina / 1 - Humano)")
