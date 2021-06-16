@@ -94,35 +94,35 @@ def ganhador(tabuleiro):
 
 def custo(tabuleiro):
     '''
-    Retorna 1 se X ganhou, -1 se 0 ganhou, 0 caso contrário.
+    Retorna -1 se X ganhou, 1 se 0 ganhou, 0 caso contrário.
     @param Tabuleiro do jogo
     @return Custo da jogada
     '''
     for linha in range(3):
         if ((tabuleiro[linha][0] == tabuleiro[linha][1]) and (tabuleiro[linha][1] == tabuleiro[linha][2])):
             if tabuleiro[linha][0] == pc:
-                return 1
-            elif tabuleiro[linha][0] == humano:
                 return -1
+            elif tabuleiro[linha][0] == humano:
+                return 1
     
     for coluna in range(3):
         if ((tabuleiro[0][coluna] == tabuleiro[1][coluna]) and (tabuleiro[1][coluna] == tabuleiro[2][coluna])):
             if tabuleiro[0][coluna] == pc:
-                return 1
-            elif tabuleiro[0][coluna] == humano:
                 return -1
+            elif tabuleiro[0][coluna] == humano:
+                return 1
 
     if ((tabuleiro[0][0] == tabuleiro[1][1]) and (tabuleiro[1][1] == tabuleiro[2][2])):
             if tabuleiro[0][0] == pc:
-                return 1
-            elif tabuleiro[0][0] == humano:
                 return -1
+            elif tabuleiro[0][0] == humano:
+                return 1
     
     if ((tabuleiro[2][0] == tabuleiro[1][1]) and (tabuleiro[1][1] == tabuleiro[0][2])):
             if tabuleiro[2][0] == pc:
-                return 1
-            elif tabuleiro[2][0] == humano:
                 return -1
+            elif tabuleiro[2][0] == humano:
+                return 1
 
     return 0
 
@@ -151,26 +151,26 @@ def minimax(tabuleiro,altura,ehPC):
         return [-1,-1,pontos]
     
     if ehPC:
-        melhor_pontuacao = [-1,-1,-10]
+        melhor_pontuacao = [-1,-1,10]
 
         for espacos_vazios in acoes(tabuleiro):
             i,j = espacos_vazios[0],espacos_vazios[1]
             tabuleiro[i][j] = pc
             pontuacao_atual = minimax(tabuleiro,altura-1,False)
             tabuleiro[i][j] = vazio
-            if melhor_pontuacao[2] < pontuacao_atual[2]:
+            if melhor_pontuacao[2] > pontuacao_atual[2]:
                 melhor_pontuacao[0] = i
                 melhor_pontuacao[1] = j
                 melhor_pontuacao[2] = pontuacao_atual[2]
     else:
-        melhor_pontuacao = [-1,-1,10]
+        melhor_pontuacao = [-1,-1,-10]
 
         for espacos_vazios in acoes(tabuleiro):
             i,j = espacos_vazios[0],espacos_vazios[1]
             tabuleiro[i][j] = humano
             pontuacao_atual = minimax(tabuleiro,altura-1,True)
             tabuleiro[i][j] = vazio
-            if melhor_pontuacao[2] > pontuacao_atual[2]:
+            if melhor_pontuacao[2] < pontuacao_atual[2]:
                 melhor_pontuacao[0] = i
                 melhor_pontuacao[1] = j
                 melhor_pontuacao[2] = pontuacao_atual[2]
