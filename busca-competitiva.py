@@ -193,7 +193,7 @@ def exibe_tabuleiro(tabuleiro):
 def jogo(tabuleiro,vez):
     '''
     Função que inicia o jogo da velha
-    @param Tabuleiro,humano,pc,vez
+    @param Tabuleiro,vez
     @return Retorna a situação final do jogo
     '''
     ## Indentifica se o jogo acabou (True) ou ainda está em andamento(False) 
@@ -239,7 +239,7 @@ def jogo(tabuleiro,vez):
 
 if __name__ == "__main__":
     print("----------Busca Competitiva----------\n")
-    ## V - Vazio
+
     tabuleiro = [
         [' ',' ',' '],
         [' ',' ',' '],
